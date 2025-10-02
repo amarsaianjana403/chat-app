@@ -1,0 +1,11 @@
+/* You can add global styles to this file, and also import other style files */
+/* filepath: c:\back-up\Angular\mono-repo-chat-app\chat-app\frontend\src\styles.scss */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles if needed */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
