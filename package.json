@@ -13,6 +13,7 @@
     "@angular/platform-browser-dynamic": "^17.3.12",
     "@angular/router": "^17.3.12",
     "@prisma/client": "^6.16.3",
+    "angularx-qrcode": "^17.0.1",
     "axios": "^1.6.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",

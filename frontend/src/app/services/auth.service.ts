@@ -27,6 +27,13 @@ export class AuthService {
         localStorage.removeItem('token');
     }
 
+    getProfile(): Observable<any> {
+        const token = localStorage.getItem('token');
+        return this.http.get<any>(`${this.serverUrl}/profile`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
     // Method to make authenticated requests
     private getAuthHeaders() {
         const token = localStorage.getItem('token');

@@ -56,11 +56,17 @@
           "buildTarget": "frontend:build:production"
         },
         "development": {
-          "buildTarget": "frontend:build:development"
+          "buildTarget": "frontend:build:development",
+          "host": "0.0.0.0",
+          "port": 4200,
+          "disableHostCheck": true
         }
       },
       "defaultConfiguration": "development",
        "options": {
+        "host": "0.0.0.0",
+        "port": 4200,
+        "disableHostCheck": true,
         "proxyConfig": "proxy.conf.json"
       }
     },

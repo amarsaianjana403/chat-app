@@ -40,24 +40,41 @@ router.post('/register', async (req, res) => {
     }
 })
 // Placeholder login route
+// ...existing code...
+
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required' });
+        }
+
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {
             return res.status(400).json({ error: 'User not found' });
         }
+        
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(400).json({ error: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ userId: user.id },
-            process.env.JWT_SECRET || 'defaultsecret',
-            { expiresIn: '1h' });
+        const JWT_SECRET = process.env.JWT_SECRET || 'defaultsecret';
+        const token = jwt.sign(
+            { 
+                userId: user.id,
+                email: user.email,
+                username: user.username 
+            },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        );
 
         res.json({
-            message: 'Login successful', token, user: {
+            message: 'Login successful', 
+            token, 
+            user: {
                 id: user.id,
                 username: user.username,
                 email: user.email
@@ -79,19 +96,46 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out successfully' });
 });
 
+
+// Profile
+router.get('/profile', verifyToken, async (req, res) => {
+  try {
+    const userId = (req as any).user.userId; // set from JWT payload
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, username: true, email: true } // exclude password
+    });
+
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
 // middleware
+// ...existing code...
+
+// Fixed middleware
 function verifyToken(req: any, res: any, next: any) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.sendStatus(401);
+  
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
 
   // check blacklist
   if (blacklistedTokens.includes(token)) {
     return res.status(403).json({ error: 'Token is invalid (logged out)' });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
-    if (err) return res.sendStatus(403);
+  jwt.verify(token, process.env.JWT_SECRET || 'defaultsecret', (err: any, user: any) => {
+    if (err) {
+      console.error('JWT verification error:', err);
+      return res.status(403).json({ error: 'Token is invalid or expired' });
+    }
     req.user = user;
     next();
   });
