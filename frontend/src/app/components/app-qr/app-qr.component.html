@@ -1,0 +1,15 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white shadow-lg rounded-xl p-6 text-center">
+    <h2 class="text-xl font-bold text-gray-700 mb-4">
+      Scan QR to Register
+    </h2>
+    
+    <qrcode 
+      [qrdata]="qrCodeURL" 
+      [width]="200" 
+      [errorCorrectionLevel]="'M'">
+    </qrcode>
+    
+    <p class="mt-4 text-gray-500">This will open the registration page.</p>
+  </div>
+</div>

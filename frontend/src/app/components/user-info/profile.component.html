@@ -1,0 +1,22 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white shadow-lg rounded-2xl p-8 w-96 text-center">
+    
+    <!-- Profile Info -->
+    <div *ngIf="profile">
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">
+        Welcome, {{ profile.username }}
+      </h2>
+      <p class="text-gray-600 mb-6">
+        Email: {{ profile.email }}
+      </p>
+    </div>
+
+    <!-- Logout Button -->
+    <button 
+      (click)="logout()"
+      class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">
+      Logout
+    </button>
+  </div>
+</div>
+
