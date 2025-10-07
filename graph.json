@@ -1,0 +1,685 @@
+{
+  "graph": {
+    "nodes": {
+      "chat-app-e2e": {
+        "name": "chat-app-e2e",
+        "type": "e2e",
+        "data": {
+          "root": "apps/chat-app-e2e",
+          "metadata": {
+            "targetGroups": {
+              "E2E (CI)": [
+                "e2e-ci--src/example.spec.ts",
+                "e2e-ci"
+              ]
+            }
+          },
+          "targets": {
+            "e2e": {
+              "options": {
+                "cwd": "apps/chat-app-e2e",
+                "command": "playwright test"
+              },
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production"
+              ],
+              "outputs": [
+                "{workspaceRoot}\\dist\\.playwright\\apps\\chat-app-e2e\\playwright-report",
+                "{workspaceRoot}\\dist\\.playwright\\apps\\chat-app-e2e\\test-output"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {}
+            },
+            "e2e-ci--src/example.spec.ts": {
+              "options": {
+                "cwd": "apps/chat-app-e2e",
+                "command": "playwright test src/example.spec.ts"
+              },
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests in src/example.spec.ts in CI"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production"
+              ],
+              "outputs": [
+                "{workspaceRoot}\\dist\\.playwright\\apps\\chat-app-e2e\\playwright-report",
+                "{workspaceRoot}\\dist\\.playwright\\apps\\chat-app-e2e\\test-output"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {}
+            },
+            "e2e-ci": {
+              "executor": "nx:noop",
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production"
+              ],
+              "outputs": [
+                "{workspaceRoot}\\dist\\.playwright\\apps\\chat-app-e2e\\playwright-report",
+                "{workspaceRoot}\\dist\\.playwright\\apps\\chat-app-e2e\\test-output"
+              ],
+              "dependsOn": [
+                {
+                  "target": "e2e-ci--src/example.spec.ts",
+                  "projects": "self",
+                  "params": "forward"
+                }
+              ],
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests in CI"
+              },
+              "options": {},
+              "configurations": {}
+            }
+          },
+          "name": "chat-app-e2e",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "projectType": "application",
+          "sourceRoot": "apps/chat-app-e2e/src",
+          "implicitDependencies": [
+            "chat-app"
+          ],
+          "tags": []
+        }
+      },
+      "chat-app": {
+        "name": "chat-app",
+        "type": "app",
+        "data": {
+          "root": "apps/chat-app",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ],
+              "options": {},
+              "configurations": {}
+            },
+            "test": {
+              "executor": "@nx/jest:jest",
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/jest.preset.js"
+              ],
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "passWithNoTests": true,
+                "jestConfig": "apps/chat-app/jest.config.ts",
+                "tsConfig": "apps/chat-app/tsconfig.spec.json"
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              }
+            },
+            "build": {
+              "executor": "@angular-devkit/build-angular:browser",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "options": {
+                "outputPath": "dist/apps/chat-app",
+                "index": "apps/chat-app/src/index.html",
+                "main": "apps/chat-app/src/main.ts",
+                "polyfills": [
+                  "zone.js"
+                ],
+                "tsConfig": "apps/chat-app/tsconfig.app.json",
+                "inlineStyleLanguage": "scss",
+                "assets": [
+                  {
+                    "glob": "**/*",
+                    "input": "apps/chat-app/public",
+                    "output": "/"
+                  }
+                ],
+                "styles": [
+                  "apps/chat-app/src/styles.scss"
+                ]
+              },
+              "configurations": {
+                "production": {
+                  "budgets": [
+                    {
+                      "type": "initial",
+                      "maximumWarning": "500kb",
+                      "maximumError": "1mb"
+                    },
+                    {
+                      "type": "anyComponentStyle",
+                      "maximumWarning": "4kb",
+                      "maximumError": "8kb"
+                    }
+                  ],
+                  "outputHashing": "all"
+                },
+                "development": {
+                  "optimization": false,
+                  "extractLicenses": false,
+                  "sourceMap": true
+                }
+              },
+              "defaultConfiguration": "production"
+            },
+            "serve": {
+              "executor": "@angular-devkit/build-angular:dev-server",
+              "configurations": {
+                "production": {
+                  "buildTarget": "chat-app:build:production"
+                },
+                "development": {
+                  "buildTarget": "chat-app:build:development"
+                }
+              },
+              "defaultConfiguration": "development",
+              "options": {}
+            },
+            "extract-i18n": {
+              "executor": "@angular-devkit/build-angular:extract-i18n",
+              "options": {
+                "buildTarget": "chat-app:build"
+              },
+              "configurations": {}
+            },
+            "serve-static": {
+              "continuous": true,
+              "executor": "@nx/web:file-server",
+              "options": {
+                "buildTarget": "chat-app:build",
+                "port": 4200,
+                "staticFilePath": "dist/apps/chat-app/browser",
+                "spa": true
+              },
+              "configurations": {}
+            }
+          },
+          "name": "chat-app",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "projectType": "application",
+          "prefix": "app",
+          "sourceRoot": "apps/chat-app/src",
+          "tags": [],
+          "implicitDependencies": []
+        }
+      },
+      "frontend-e2e": {
+        "name": "frontend-e2e",
+        "type": "e2e",
+        "data": {
+          "root": "frontend-e2e",
+          "metadata": {
+            "targetGroups": {
+              "E2E (CI)": [
+                "e2e-ci--src/example.spec.ts",
+                "e2e-ci"
+              ]
+            }
+          },
+          "targets": {
+            "e2e": {
+              "options": {
+                "cwd": "frontend-e2e",
+                "command": "playwright test"
+              },
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production"
+              ],
+              "outputs": [
+                "{workspaceRoot}\\dist\\.playwright\\frontend-e2e\\playwright-report",
+                "{workspaceRoot}\\dist\\.playwright\\frontend-e2e\\test-output"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {}
+            },
+            "e2e-ci--src/example.spec.ts": {
+              "options": {
+                "cwd": "frontend-e2e",
+                "command": "playwright test src/example.spec.ts"
+              },
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests in src/example.spec.ts in CI"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production"
+              ],
+              "outputs": [
+                "{workspaceRoot}\\dist\\.playwright\\frontend-e2e\\playwright-report",
+                "{workspaceRoot}\\dist\\.playwright\\frontend-e2e\\test-output"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {}
+            },
+            "e2e-ci": {
+              "executor": "nx:noop",
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production"
+              ],
+              "outputs": [
+                "{workspaceRoot}\\dist\\.playwright\\frontend-e2e\\playwright-report",
+                "{workspaceRoot}\\dist\\.playwright\\frontend-e2e\\test-output"
+              ],
+              "dependsOn": [
+                {
+                  "target": "e2e-ci--src/example.spec.ts",
+                  "projects": "self",
+                  "params": "forward"
+                }
+              ],
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests in CI"
+              },
+              "options": {},
+              "configurations": {}
+            }
+          },
+          "name": "frontend-e2e",
+          "$schema": "../node_modules/nx/schemas/project-schema.json",
+          "projectType": "application",
+          "sourceRoot": "frontend-e2e/src",
+          "implicitDependencies": [
+            "frontend"
+          ],
+          "tags": []
+        }
+      },
+      "backend-e2e": {
+        "name": "backend-e2e",
+        "type": "e2e",
+        "data": {
+          "root": "backend-e2e",
+          "targets": {
+            "e2e": {
+              "executor": "@nx/jest:jest",
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/jest.preset.js"
+              ],
+              "outputs": [
+                "{workspaceRoot}/coverage/{e2eProjectRoot}"
+              ],
+              "options": {
+                "passWithNoTests": true,
+                "jestConfig": "backend-e2e/jest.config.ts"
+              },
+              "dependsOn": [
+                "backend:build",
+                "backend:serve"
+              ],
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              }
+            }
+          },
+          "name": "backend-e2e",
+          "$schema": "../node_modules/nx/schemas/project-schema.json",
+          "projectType": "application",
+          "implicitDependencies": [
+            "backend"
+          ],
+          "tags": []
+        }
+      },
+      "frontend": {
+        "name": "frontend",
+        "type": "app",
+        "data": {
+          "root": "frontend",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ],
+              "options": {},
+              "configurations": {}
+            },
+            "test": {
+              "executor": "@nx/jest:jest",
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/jest.preset.js"
+              ],
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "passWithNoTests": true,
+                "jestConfig": "frontend/jest.config.ts",
+                "tsConfig": "frontend/tsconfig.spec.json"
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              }
+            },
+            "build": {
+              "executor": "@angular-devkit/build-angular:browser",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "options": {
+                "outputPath": "dist/frontend",
+                "index": "frontend/src/index.html",
+                "main": "frontend/src/main.ts",
+                "polyfills": [
+                  "zone.js"
+                ],
+                "tsConfig": "frontend/tsconfig.app.json",
+                "inlineStyleLanguage": "scss",
+                "assets": [
+                  {
+                    "glob": "**/*",
+                    "input": "frontend/public",
+                    "output": "/"
+                  }
+                ],
+                "styles": [
+                  "frontend/src/styles.scss"
+                ]
+              },
+              "configurations": {
+                "production": {
+                  "budgets": [
+                    {
+                      "type": "initial",
+                      "maximumWarning": "500kb",
+                      "maximumError": "1mb"
+                    },
+                    {
+                      "type": "anyComponentStyle",
+                      "maximumWarning": "4kb",
+                      "maximumError": "8kb"
+                    }
+                  ],
+                  "outputHashing": "all"
+                },
+                "development": {
+                  "optimization": false,
+                  "extractLicenses": false,
+                  "sourceMap": true
+                }
+              },
+              "defaultConfiguration": "production"
+            },
+            "serve": {
+              "executor": "@angular-devkit/build-angular:dev-server",
+              "defaultConfiguration": "development",
+              "options": {
+                "host": "0.0.0.0",
+                "port": 4200,
+                "disableHostCheck": true,
+                "proxyConfig": "proxy.conf.json"
+              },
+              "configurations": {
+                "production": {
+                  "buildTarget": "frontend:build:production",
+                  "host": "0.0.0.0",
+                  "disableHostCheck": true
+                },
+                "development": {
+                  "buildTarget": "frontend:build:development",
+                  "host": "0.0.0.0",
+                  "port": 4200,
+                  "disableHostCheck": true
+                }
+              }
+            },
+            "extract-i18n": {
+              "executor": "@angular-devkit/build-angular:extract-i18n",
+              "options": {
+                "buildTarget": "frontend:build"
+              },
+              "configurations": {}
+            },
+            "serve-static": {
+              "continuous": true,
+              "executor": "@nx/web:file-server",
+              "options": {
+                "buildTarget": "frontend:build",
+                "port": 4200,
+                "staticFilePath": "dist/frontend/browser",
+                "spa": true
+              },
+              "configurations": {}
+            }
+          },
+          "name": "frontend",
+          "$schema": "../node_modules/nx/schemas/project-schema.json",
+          "projectType": "application",
+          "prefix": "app",
+          "sourceRoot": "frontend/src",
+          "tags": [],
+          "implicitDependencies": []
+        }
+      },
+      "backend": {
+        "name": "backend",
+        "type": "app",
+        "data": {
+          "root": "backend",
+          "targets": {
+            "test": {
+              "executor": "@nx/jest:jest",
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/jest.preset.js"
+              ],
+              "outputs": [
+                "{workspaceRoot}/coverage/{projectRoot}"
+              ],
+              "options": {
+                "passWithNoTests": true,
+                "jestConfig": "backend/jest.config.ts"
+              },
+              "configurations": {
+                "ci": {
+                  "ci": true,
+                  "codeCoverage": true
+                }
+              }
+            },
+            "build": {
+              "executor": "@nx/esbuild:esbuild",
+              "cache": true,
+              "dependsOn": [
+                "^build"
+              ],
+              "inputs": [
+                "production",
+                "^production"
+              ],
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "defaultConfiguration": "production",
+              "options": {
+                "platform": "node",
+                "outputPath": "dist/backend",
+                "format": [
+                  "cjs"
+                ],
+                "bundle": false,
+                "main": "backend/src/main.ts",
+                "tsConfig": "backend/tsconfig.app.json",
+                "assets": [
+                  "backend/src/assets"
+                ],
+                "generatePackageJson": true,
+                "esbuildOptions": {
+                  "sourcemap": true,
+                  "outExtension": {
+                    ".js": ".js"
+                  }
+                }
+              },
+              "configurations": {
+                "development": {},
+                "production": {
+                  "esbuildOptions": {
+                    "sourcemap": false,
+                    "outExtension": {
+                      ".js": ".js"
+                    }
+                  }
+                }
+              }
+            },
+            "prune-lockfile": {
+              "dependsOn": [
+                "build"
+              ],
+              "cache": true,
+              "executor": "@nx/js:prune-lockfile",
+              "outputs": [
+                "{workspaceRoot}/dist/backend/package.json",
+                "{workspaceRoot}/dist/backend/package-lock.json"
+              ],
+              "options": {
+                "buildTarget": "build"
+              },
+              "configurations": {}
+            },
+            "copy-workspace-modules": {
+              "dependsOn": [
+                "build"
+              ],
+              "cache": true,
+              "outputs": [
+                "{workspaceRoot}/dist/backend/workspace_modules"
+              ],
+              "executor": "@nx/js:copy-workspace-modules",
+              "options": {
+                "buildTarget": "build"
+              },
+              "configurations": {}
+            },
+            "prune": {
+              "dependsOn": [
+                "prune-lockfile",
+                "copy-workspace-modules"
+              ],
+              "executor": "nx:noop",
+              "options": {},
+              "configurations": {}
+            },
+            "serve": {
+              "continuous": true,
+              "executor": "@nx/js:node",
+              "defaultConfiguration": "development",
+              "dependsOn": [
+                "build"
+              ],
+              "options": {
+                "buildTarget": "backend:build",
+                "runBuildTargetDependencies": false
+              },
+              "configurations": {
+                "development": {
+                  "buildTarget": "backend:build:development"
+                },
+                "production": {
+                  "buildTarget": "backend:build:production"
+                }
+              }
+            }
+          },
+          "name": "backend",
+          "$schema": "../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "backend/src",
+          "projectType": "application",
+          "tags": [],
+          "implicitDependencies": []
+        }
+      }
+    },
+    "dependencies": {
+      "chat-app-e2e": [
+        {
+          "source": "chat-app-e2e",
+          "target": "chat-app",
+          "type": "implicit"
+        }
+      ],
+      "chat-app": [],
+      "frontend-e2e": [
+        {
+          "source": "frontend-e2e",
+          "target": "frontend",
+          "type": "implicit"
+        }
+      ],
+      "backend-e2e": [
+        {
+          "source": "backend-e2e",
+          "target": "backend",
+          "type": "implicit"
+        }
+      ],
+      "frontend": [],
+      "backend": []
+    }
+  },
+  "affectedProjects": [],
+  "criticalPath": []
+}

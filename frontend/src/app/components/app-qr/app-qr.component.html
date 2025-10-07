@@ -1,15 +1,47 @@
-<div class="flex items-center justify-center min-h-screen bg-gray-100">
-  <div class="bg-white shadow-lg rounded-xl p-6 text-center">
-    <h2 class="text-xl font-bold text-gray-700 mb-4">
-      Scan QR to Register
+<div class="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+  <div class="bg-white shadow-lg rounded-xl p-6 text-center max-w-md">
+    <h2 class="text-2xl font-bold text-gray-700 mb-6">
+      📱 Scan QR to Register
     </h2>
     
-    <qrcode 
-      [qrdata]="qrCodeURL" 
-      [width]="200" 
-      [errorCorrectionLevel]="'M'">
-    </qrcode>
+    <!-- QR Code -->
+    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+      <qrcode 
+        [qrdata]="qrCodeURL" 
+        [width]="200" 
+        [errorCorrectionLevel]="'M'"
+        [colorDark]="'#000000'"
+        [colorLight]="'#ffffff'">
+      </qrcode>
+    </div>
     
-    <p class="mt-4 text-gray-500">This will open the registration page.</p>
+    <!-- URL Display -->
+    <div class="bg-blue-50 rounded-lg p-4 mb-4">
+      <h3 class="text-sm font-semibold text-gray-600 mb-2">QR Code URL:</h3>
+      <p class="text-sm text-blue-600 break-all font-mono">
+        {{ qrCodeURL }}
+      </p>
+    </div>
+    
+    <!-- Test Links -->
+    <div class="space-y-2 mb-4">
+      <a [href]="qrCodeURL" 
+         target="_blank" 
+         class="block w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+        🔗 Test Link (Laptop)
+      </a>
+      
+      <button (click)="copyToClipboard()" 
+              class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+        📋 Copy URL
+      </button>
+    </div>
+    
+    <!-- Instructions -->
+    <div class="text-sm text-gray-500 space-y-1">
+      <p>📲 Scan with your mobile camera</p>
+      <p>🌐 Both devices must be on same WiFi</p>
+      <p>🔥 Check Windows Firewall settings</p>
+    </div>
   </div>
 </div>
